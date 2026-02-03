@@ -2,10 +2,7 @@ import json
 
 ARCHIVO_JSON = "materias.json"
 
-
-
 def cargar_datos():
-
     try:
         with open(ARCHIVO_JSON, 'r', encoding='utf-8') as archivo:
             datos = json.load(archivo)
@@ -15,12 +12,9 @@ def cargar_datos():
         return []
 
 def guardar_datos(datos_nuevos):
-
     with open(ARCHIVO_JSON, 'w', encoding='utf-8') as archivo:
-
         json.dump(datos_nuevos, archivo, indent=4, ensure_ascii=False)
     print(">>> Cambios guardados exitosamente en el archivo.")
-
 
 def menu_coordinador():
     materias = cargar_datos()
@@ -29,15 +23,76 @@ def menu_coordinador():
         print("\n--- SISTEMA COORDINADOR UNEFA ---")
         print("1. Buscar y Modificar Materia")
         print("2. Ver todas las materias")
-        print("3. Salir")
+        print("3. Crear Nueva Materia")
+        print("4. Salir")
         
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
             buscar_y_modificar(materias)
+        
         elif opcion == "2":
             mostrar_todas(materias)
+
+        # --- LÓGICA AGREGADA PARA CREAR MATERIA ---
         elif opcion == "3":
+            print("\n--- CREAR NUEVA MATERIA ---")
+            
+            # 1. Pedir y Validar Código
+            nuevo_codigo = input("Ingrese el CÓDIGO (ej. MAT0202): ").upper()
+            
+            codigo_existe = False
+            for m in materias:
+                if m["codigo_materia"] == nuevo_codigo:
+                    codigo_existe = True
+                    break
+            
+            if codigo_existe:
+                print("¡Error! Ya existe una materia con ese código.")
+            else:
+                # 2. Pedir resto de datos
+                nuevo_nombre = input("Nombre de la materia: ")
+                
+                # Validación simple de cupo
+                nuevo_cupo = 0
+                while True:
+                    entrada_cupo = input("Ingrese cupo máximo (numérico): ")
+                    if entrada_cupo.isdigit():
+                        nuevo_cupo = int(entrada_cupo)
+                        break
+                    else:
+                        print("Por favor, ingrese un número válido.")
+
+                dia_input = input("Día de clase (ej. Lunes): ").capitalize()
+                
+                print("Bloques: 0=7:00, 1=7:45, 2=8:30, 3=9:15, 4=10:00...")
+                bloques_str = input("Ingrese bloques separados por coma (ej. 0,1): ")
+                
+                # Convertir "0,1" a lista de enteros [0, 1]
+                lista_bloques = []
+                if bloques_str: 
+                    partes = bloques_str.split(",")
+                    for p in partes:
+                        if p.strip().isdigit():
+                            lista_bloques.append(int(p.strip()))
+
+                # 3. Crear el diccionario de la materia
+                nueva_materia = {
+                    "codigo_materia": nuevo_codigo,
+                    "materia": nuevo_nombre,
+                    "dia": [dia_input],
+                    "cupo": nuevo_cupo,
+                    "bloques": lista_bloques,
+                    "seccion": "D1",        
+                    "activa": True          
+                }
+                
+                # 4. Agregar y Guardar
+                materias.append(nueva_materia)
+                guardar_datos(materias)
+                print(f"\n>>> ¡Materia '{nuevo_nombre}' creada exitosamente!")
+
+        elif opcion == "4":
             print("Saliendo del sistema...")
             break
         else:
@@ -77,7 +132,6 @@ def buscar_y_modificar(lista_materias):
     hay_cambios = False
 
     if accion == "A":
-
         estado_nuevo = not materia_encontrada['activa']
         materia_encontrada['activa'] = estado_nuevo
         print(f"Estado cambiado a: {estado_nuevo}")
