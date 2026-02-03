@@ -8,7 +8,7 @@ import coodinador
 
 if __name__ == "__main__":
     
-    # --- CARGA DE USUARIOS (Sin funciones, directo al flujo) ---
+    # --- CARGA DE USUARIOS ---
     usuarios_db = {}
     if os.path.exists("usuarios.json"):
         try:
@@ -18,7 +18,7 @@ if __name__ == "__main__":
             print("Error: No se pudo leer usuarios.json")
             usuarios_db = {}
     else:
-        print("Advertencia: No existe el archivo usuarios.json")
+        print("Advertencia: No existe el archivo usuarios.json en la carpeta actual.")
 
     # --- CICLO PRINCIPAL DEL LOGIN ---
     while True:
@@ -58,18 +58,14 @@ if __name__ == "__main__":
         print(f"\n--- INGRESO: {rol_esperado.upper()} ---")
 
         # --- VALIDACIÓN DE TIPO DE DOCUMENTO ---
-        # Solo pedimos V/E/P si NO es el usuario especial 'admin'
-        # Pero primero pedimos el dato general para ver qué es
-        
+        # Esto ahora es CRÍTICO para la seguridad
         prefijo_doc = ""
-        # Lógica para pedir V/E/P
         while True:
             tipo_input = input("Tipo de Documento (V/E/P) [o 'A' para Admin]: ").upper()
             if tipo_input in ["V", "E", "P"]:
                 prefijo_doc = tipo_input
                 break
             elif tipo_input == "A":
-                # Caso especial para entrar como 'admin' (que está en tu json)
                 prefijo_doc = "ADMIN"
                 break
             else:
@@ -78,17 +74,26 @@ if __name__ == "__main__":
         usuario_ingresado = input("Ingrese Cédula/Usuario: ")
         clave_ingresada = input("Ingrese Contraseña: ")
 
-        # --- LÓGICA DE VERIFICACIÓN (El Corazón del Login) ---
+        # --- LÓGICA DE VERIFICACIÓN DE SEGURIDAD ---
         usuario_valido = False
+        datos_usuario = None
         
-        # 1. ¿Existe el usuario en el JSON?
-        if usuario_ingresado in usuarios_db:
-            datos_usuario = usuarios_db[usuario_ingresado]
+        # 1. CONSTRUIMOS EL ID ÚNICO (PREFIJO + CÉDULA)
+        if prefijo_doc == "ADMIN":
+            # Si es admin, usamos el usuario tal cual (ej. "admin")
+            usuario_busqueda = usuario_ingresado 
+        else:
+            # Si es persona, forzamos el formato "Letra-Cedula" (ej. "V-12345678")
+            usuario_busqueda = f"{prefijo_doc}-{usuario_ingresado}"
+
+        # 2. VERIFICAMOS SI EXISTE ESE USUARIO EXACTO
+        if usuario_busqueda in usuarios_db:
+            datos_usuario = usuarios_db[usuario_busqueda]
             
-            # 2. ¿La clave coincide?
+            # 3. VERIFICAMOS LA CONTRASEÑA
             if datos_usuario["clave"] == clave_ingresada:
                 
-                # 3. ¿El rol coincide con el que seleccionó en el menú?
+                # 4. VERIFICAMOS QUE TENGA EL ROL CORRECTO
                 if datos_usuario["rol"] == rol_esperado:
                     usuario_valido = True
                 else:
@@ -96,12 +101,15 @@ if __name__ == "__main__":
             else:
                 print("\nError: Contraseña incorrecta.")
         else:
-            print("\nError: Usuario no encontrado en la base de datos.")
+            # Mensaje de error detallado
+            print(f"\nError: Usuario '{usuario_busqueda}' no encontrado.")
+            if prefijo_doc != "ADMIN":
+                print(f"(El sistema buscó '{usuario_busqueda}'. Verifique que seleccionó la letra correcta V/E/P)")
 
-        # --- REDIRECCIÓN ---
+        # --- REDIRECCIÓN AL SISTEMA ---
         if usuario_valido:
             print(f"\n¡Bienvenido, usuario {usuario_ingresado}!")
-            time.sleep(1.5) # Pequeña pausa para que se vea el mensaje
+            time.sleep(1.5) 
 
             # Limpiamos pantalla antes de entrar al módulo
             if os.name == 'nt':
@@ -113,10 +121,6 @@ if __name__ == "__main__":
                 coodinador.menu_coordinador()
             
             elif rol_esperado == "alumno":
-                # NOTA: Si usaste mi código anterior de alumno.py, 
-                # este menú te volverá a pedir la cédula.
-                # Si quisieras pasarla directo, tendrías que modificar menu_alumno para recibir argumentos.
-                # Por ahora, respetamos la estructura de archivos que tienes.
                 alumno.menu_alumno()
                 
             elif rol_esperado == "profesor":
@@ -126,3 +130,4 @@ if __name__ == "__main__":
         else:
             # Si falló el login
             input("\nPresione Enter para volver a intentar...")
+
