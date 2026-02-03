@@ -1,4 +1,4 @@
-import json
+iimport json
 
 ARCHIVO_JSON = "materias.json"
 
@@ -63,6 +63,16 @@ def menu_coordinador():
                     else:
                         print("Por favor, ingrese un número válido.")
 
+                # --- NUEVA VALIDACIÓN PARA UC ---
+                nuevas_uc = 0
+                while True:
+                    entrada_uc = input("Ingrese Unidades de Crédito (ej. 3): ")
+                    if entrada_uc.isdigit():
+                        nuevas_uc = int(entrada_uc)
+                        break
+                    else:
+                        print("Por favor, ingrese un número válido para las UC.")
+
                 dia_input = input("Día de clase (ej. Lunes): ").capitalize()
                 
                 print("Bloques: 0=7:00, 1=7:45, 2=8:30, 3=9:15, 4=10:00...")
@@ -80,6 +90,7 @@ def menu_coordinador():
                 nueva_materia = {
                     "codigo_materia": nuevo_codigo,
                     "materia": nuevo_nombre,
+                    "uc": nuevas_uc,        # <--- AQUÍ SE GUARDAN LAS UC
                     "dia": [dia_input],
                     "cupo": nuevo_cupo,
                     "bloques": lista_bloques,
@@ -90,7 +101,7 @@ def menu_coordinador():
                 # 4. Agregar y Guardar
                 materias.append(nueva_materia)
                 guardar_datos(materias)
-                print(f"\n>>> ¡Materia '{nuevo_nombre}' creada exitosamente!")
+                print(f"\n>>> ¡Materia '{nuevo_nombre}' ({nuevas_uc} UC) creada exitosamente!")
 
         elif opcion == "4":
             print("Saliendo del sistema...")
@@ -102,7 +113,9 @@ def mostrar_todas(lista_materias):
     print("\n--- LISTA DE MATERIAS ---")
     for m in lista_materias:
         estado = "ACTIVA" if m['activa'] else "INACTIVA"
-        print(f"[{m['codigo_materia']}] {m['materia']} - Cupo: {m['cupo']} - Estado: {estado}")
+        # Usamos .get('uc', 3) por si hay materias viejas que no tienen el campo UC
+        uc_actual = m.get('uc', 3)
+        print(f"[{m['codigo_materia']}] {m['materia']} ({uc_actual} UC) - Cupo: {m['cupo']} - Estado: {estado}")
 
 def buscar_y_modificar(lista_materias):
     codigo_buscado = input("Ingrese el CÓDIGO de la materia a modificar (ej. MAT0101): ")
@@ -118,14 +131,19 @@ def buscar_y_modificar(lista_materias):
         print("Error: Materia no encontrada.")
         return
 
+    # Recuperar UC con valor por defecto 3 si no existe
+    uc_actual = materia_encontrada.get('uc', 3)
+
     print(f"\nEditando: {materia_encontrada['materia']}")
     print(f"Estado actual: {'Activa' if materia_encontrada['activa'] else 'Inactiva'}")
     print(f"Cupo actual: {materia_encontrada['cupo']}")
+    print(f"UC actuales: {uc_actual}")
     
     print("\n¿Qué desea hacer?")
     print("A. Activar/Desactivar materia")
     print("B. Modificar Cupo")
-    print("C. Cancelar")
+    print("C. Modificar Unidades de Crédito (UC)") # <--- NUEVA OPCIÓN
+    print("D. Cancelar")
     
     accion = input("Elija una opción: ").upper()
     
@@ -141,8 +159,16 @@ def buscar_y_modificar(lista_materias):
         nuevo_cupo = int(input("Ingrese nuevo cupo: "))
         materia_encontrada['cupo'] = nuevo_cupo
         hay_cambios = True
+
+    elif accion == "C": # <--- LÓGICA PARA MODIFICAR UC
+        try:
+            nueva_uc_val = int(input("Ingrese nuevas UC: "))
+            materia_encontrada['uc'] = nueva_uc_val
+            hay_cambios = True
+        except ValueError:
+            print("Error: Debe ingresar un número.")
         
-    elif accion == "C":
+    elif accion == "D":
         print("Operación cancelada.")
         
     if hay_cambios:
