@@ -1,0 +1,38 @@
+{
+    "12345678": {
+        "clave": "unefa2026",
+        "rol": "alumno"
+    },
+    "87654321": {
+        "clave": "profesor789",
+        "rol": "profesor"
+    },
+    "admin": {
+        "clave": "coord456",
+        "rol": "coordinador"
+    },
+    "32151949": {
+        "clave": "mireya",
+        "rol": "coordinador"
+    },
+    "0102": {
+        "clave": "mua",
+        "rol": "alumno"
+    },
+    "0108": {
+        "clave": "brian",
+        "rol": "profesor"
+    },
+    "201224": {
+        "clave": "carlos123",
+        "rol": "coordinador"
+    },
+    "010203": {
+        "clave": "monica",
+        "rol": "alumno"
+    },
+    "0908": {
+        "clave": "brz",
+        "rol": "profesor"
+    }
+}
