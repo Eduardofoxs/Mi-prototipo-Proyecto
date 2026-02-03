@@ -5,7 +5,6 @@ import os
 from app import guardar_datos, cargar_datos as cargar_app_datos
 
 ARCHIVO_DB = "materias.json"          
-ARCHIVO_ESTUDIANTE = "horario_estudiante.json" 
 
 def cargar_json(nombre_archivo):
     if os.path.exists(nombre_archivo):
@@ -20,9 +19,10 @@ def guardar_json(nombre_archivo, datos):
     with open(nombre_archivo, "w", encoding='utf-8') as archivo:
         json.dump(datos, archivo, indent=4)
 
-def inscribir_materia():
+# Ahora la función recibe el archivo específico del alumno
+def inscribir_materia(archivo_usuario):
     oferta_materias = cargar_json(ARCHIVO_DB)
-    mis_inscripciones = cargar_json(ARCHIVO_ESTUDIANTE)
+    mis_inscripciones = cargar_json(archivo_usuario) # Cargamos SU archivo personal
     
     if not oferta_materias:
         print("No hay oferta de materias cargada.")
@@ -102,12 +102,15 @@ def inscribir_materia():
         "bloques": materia_encontrada["bloques"]
     }
     mis_inscripciones.append(nueva_inscripcion)
-    guardar_json(ARCHIVO_ESTUDIANTE, mis_inscripciones)
+    
+    # Guardamos en el archivo personal del usuario
+    guardar_json(archivo_usuario, mis_inscripciones)
 
     print(f"¡Inscripción exitosa en {materia_encontrada['materia']}!")
 
-def generar_horario_visual():
-    materias_inscritas = cargar_json(ARCHIVO_ESTUDIANTE)
+# Ahora la función recibe el archivo específico del alumno
+def generar_horario_visual(archivo_usuario):
+    materias_inscritas = cargar_json(archivo_usuario) # Leemos SU archivo personal
 
     if not materias_inscritas:
         print("\nNo tienes materias inscritas aún.")
@@ -147,8 +150,12 @@ def generar_horario_visual():
     print("="*80)
 
 def menu_alumno():
+    # Pedimos la Cédula al inicio para identificar al usuario
+    cedula = input("\nIngrese su Cédula de Identidad para gestionar su horario: ")
+    archivo_personal = f"horario_{cedula}.json"
+    
     while True:
-        print("\n--- SISTEMA ALUMNO UNEFA ---")
+        print(f"\n--- SISTEMA ALUMNO UNEFA (Usuario: {cedula}) ---")
         print("1. Inscribir Materia")
         print("2. Ver Horario")
         print("3. Salir")
@@ -156,9 +163,11 @@ def menu_alumno():
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            inscribir_materia()
+            # Pasamos el nombre del archivo personal a la función
+            inscribir_materia(archivo_personal)
         elif opcion == "2":
-            generar_horario_visual()
+            # Pasamos el nombre del archivo personal a la función
+            generar_horario_visual(archivo_personal)
         elif opcion == "3":
             break
         else:
