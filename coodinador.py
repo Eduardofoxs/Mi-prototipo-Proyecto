@@ -1,4 +1,4 @@
-iimport json
+import json
 
 ARCHIVO_JSON = "materias.json"
 
@@ -176,3 +176,4 @@ def buscar_y_modificar(lista_materias):
 
 if __name__ == "__main__":
     menu_coordinador()
+
