@@ -58,7 +58,6 @@ if __name__ == "__main__":
         print(f"\n--- INGRESO: {rol_esperado.upper()} ---")
 
         # --- VALIDACIÓN DE TIPO DE DOCUMENTO ---
-        # Esto ahora es CRÍTICO para la seguridad
         prefijo_doc = ""
         while True:
             tipo_input = input("Tipo de Documento (V/E/P) [o 'A' para Admin]: ").upper()
@@ -71,7 +70,8 @@ if __name__ == "__main__":
             else:
                 print("Error: Debe escribir V, E o P.")
         
-        usuario_ingresado = input("Ingrese Cédula/Usuario: ")
+        # --- CAMBIO REALIZADO AQUÍ ---
+        usuario_ingresado = input("Ingrese Cédula/Pasaporte: ")
         clave_ingresada = input("Ingrese Contraseña: ")
 
         # --- LÓGICA DE VERIFICACIÓN DE SEGURIDAD ---
@@ -130,4 +130,3 @@ if __name__ == "__main__":
         else:
             # Si falló el login
             input("\nPresione Enter para volver a intentar...")
-
