@@ -1,7 +1,7 @@
 import json
 import os
 
-# Importamos solo lo necesario y con cuidado
+# Importamos solo lo necesario
 from app import guardar_datos, cargar_datos as cargar_app_datos
 
 ARCHIVO_DB = "materias.json"          
@@ -49,13 +49,50 @@ def inscribir_materia():
         print("No quedan cupos disponibles.")
         return
 
+    # Verificar si ya tiene la materia inscrita
     for mi_materia in mis_inscripciones:
         if mi_materia["codigo_materia"] == materia_encontrada["codigo_materia"]:
             print("Ya tienes inscrita esta materia.")
             return
 
+    # --- INICIO DE VALIDACIÓN DE CRUCE DE HORARIOS ---
+    # Revisamos conflicto con las materias que YA tiene inscritas
+    hay_cruce = False 
+    
+    for inscrita in mis_inscripciones:
+        # 1. ¿Coinciden los días?
+        dias_coinciden = False
+        dia_conflicto = ""
+        
+        for dia_nuevo in materia_encontrada["dia"]:
+            for dia_inscrito in inscrita["dia"]:
+                if dia_nuevo == dia_inscrito:
+                    dias_coinciden = True
+                    dia_conflicto = dia_nuevo
+                    break 
+            if dias_coinciden:
+                break
+        
+        # 2. Si los días coinciden, revisamos si chocan las horas (bloques)
+        if dias_coinciden:
+            for bloque_nuevo in materia_encontrada["bloques"]:
+                for bloque_inscrito in inscrita["bloques"]:
+                    if bloque_nuevo == bloque_inscrito:
+                        hay_cruce = True
+                        print(f"¡Error! Choque de horario con '{inscrita['materia']}'.")
+                        print(f"Conflicto en: {dia_conflicto}, bloque {bloque_nuevo}.")
+                        break 
+            if hay_cruce:
+                break
+
+    if hay_cruce:
+        return 
+    # --- FIN DE VALIDACIÓN ---
+
+    # Si todo está bien, procedemos a inscribir
     materia_encontrada["cupo"] -= 1
-    # Guardamos en la DB general (usamos la función que importamos o la local, ambas sirven)
+    
+    # Guardamos el cambio de cupo en la DB general
     guardar_json(ARCHIVO_DB, oferta_materias)
 
     nueva_inscripcion = {
@@ -127,6 +164,5 @@ def menu_alumno():
         else:
             print("Opción no válida.")
 
-# ESTO ES LO IMPORTANTE: Solo corre si ejecutas alumno.py directamente
 if __name__ == "__main__":
     menu_alumno()
