@@ -1,0 +1,12 @@
+[
+    {
+        "materia": "Quimica I",
+        "codigo_materia": "QUI0101",
+        "dia": [
+            "Lunes"
+        ],
+        "bloques": [
+            2
+        ]
+    }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "codigo_materia": "MAT0101",
+        "materia": "Matematicas I",
+        "dia": [],
+        "cupo": 0,
+        "bloques": [],
+        "seccion": "",
+        "activa": false
+    },
+    {
+        "codigo_materia": "FIS0101",
+        "materia": "Fisica I",
+        "dia": [],
+        "cupo": 0,
+        "bloques": [],
+        "seccion": "D1",
+        "activa": false
+    },
+    {
+        "codigo_materia": "QUI0101",
+        "materia": "Quimica I",
+        "dia": [
+            "Lunes"
+        ],
+        "cupo": 49,
+        "bloques": [
+            2
+        ],
+        "seccion": "D1",
+        "activa": true
+    },
+    {
+        "codigo_materia": "MAT0102",
+        "materia": "Geometra analtica",
+        "dia": [],
+        "cupo": 0,
+        "bloques": [],
+        "seccion": "D1",
+        "activa": false
+    }
+]

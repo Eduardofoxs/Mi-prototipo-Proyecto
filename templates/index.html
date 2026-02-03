@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Universitario</title>
+    <style>
+
+        body { font-family: sans-serif; padding: 20px; }
+        .hidden { display: none; }
+        .dashboard { margin-top: 20px; padding: 20px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loginScreen" class="login-box">
+            <h2>Acceso al Sistema</h2>
+            <p class="subtitle">Ingrese sus credenciales institucionales</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="cedula">Cédula de Identidad:</label>
+                    <input type="text" id="cedula" placeholder="Ej. 12345678" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" placeholder="••••••" required>
+                </div>
+
+                <p id="errorMsg" class="error-text hidden">Credenciales incorrectas.</p>
+                
+            </form>
+        <select id="roleSelector">
+            <option value="estudiante">Estudiante</option>
+            <option value="profesor">Profesor</option>
+            <option value="administrador">Administrador</option>
+        </select>
+        <button id="btnLogin">Ingresar</button>
+    </div>
+
+    <div id="appDashboard" class="hidden dashboard"> <!-- pag principal-->
+        <h2 id="welcomeMsg">Bienvenido</h2>
+        <div id="menuContainer"></div>
+        <button id="btnLogout" style="margin-top:20px; background:red; color:white;">Salir</button>
+    </div>
+
+    <script src="app.js"></script> <!-- archivo java que deberia llevar el código de la app-->
+</body>
+</html>
